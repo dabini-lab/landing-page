@@ -25,9 +25,7 @@ const Hero = () => (
         title={
           <>
             {'An AI chatbot that\n'}
-            <span className="text-primary-500">
-              you have always desired for
-            </span>
+            <span className="text-primary-500">you have always desired</span>
           </>
         }
         description="The easiest way to ask something to the AI."
