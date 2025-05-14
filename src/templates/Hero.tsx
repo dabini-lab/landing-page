@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { Background } from '../background/Background';
-import { Button } from '../button/Button';
+import { Button, ButtonColor } from '../button/Button';
 import { HeroOneButton } from '../hero/HeroOneButton';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
@@ -33,7 +33,9 @@ const Hero = () => (
         description="The easiest way to ask something to the AI."
         button={
           <Link href="https://discord.com/oauth2/authorize?client_id=1335557436349874346">
-            <Button xl>Add to Discord</Button>
+            <Button xl color={ButtonColor.DISCORD}>
+              Add to Discord
+            </Button>
           </Link>
         }
       />
