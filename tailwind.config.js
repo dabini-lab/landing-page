@@ -37,6 +37,10 @@ module.exports = {
           800: '#2d3748',
           900: '#1a202c',
         },
+        discord: {
+          100: '#7289da',
+          200: '#677bc4',
+        },
       },
       lineHeight: {
         hero: '4.5rem',

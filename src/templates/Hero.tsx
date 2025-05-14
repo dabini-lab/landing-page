@@ -1,7 +1,5 @@
-import Link from 'next/link';
-
 import { Background } from '../background/Background';
-import { Button } from '../button/Button';
+import { Button, ButtonColor } from '../button/Button';
 import { HeroOneButton } from '../hero/HeroOneButton';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
@@ -12,13 +10,11 @@ const Hero = () => (
     <Section yPadding="py-6">
       <NavbarTwoColumns logo={<Logo xl />}>
         <li>
-          <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
+          {/* <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
             GitHub
-          </Link>
+          </Link> */}
         </li>
-        <li>
-          <Link href="/">Sign in</Link>
-        </li>
+        <li>{/* <Link href="/">Sign in</Link> */}</li>
       </NavbarTwoColumns>
     </Section>
 
@@ -26,15 +22,21 @@ const Hero = () => (
       <HeroOneButton
         title={
           <>
-            {'The modern landing page for\n'}
-            <span className="text-primary-500">React developers</span>
+            {'An AI chatbot that\n'}
+            <span className="text-primary-500">you have always desired</span>
           </>
         }
-        description="The easiest way to build a React landing page in seconds."
+        description="The easiest way to ask something to the AI."
         button={
-          <Link href="https://creativedesignsguru.com/category/nextjs/">
-            <Button xl>Download Your Free Theme</Button>
-          </Link>
+          <a
+            href="https://discord.com/oauth2/authorize?client_id=1335557436349874346"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button xl color={ButtonColor.DISCORD}>
+              Add to Discord
+            </Button>
+          </a>
         }
       />
     </Section>
