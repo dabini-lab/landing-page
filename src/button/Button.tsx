@@ -1,7 +1,13 @@
 import className from 'classnames';
 
+enum ButtonColor {
+  PRIMARY = 'primary',
+  DISCORD = 'discord',
+}
+
 type IButtonProps = {
   xl?: boolean;
+  color?: ButtonColor;
   children: string;
 };
 
@@ -10,7 +16,9 @@ const Button = (props: IButtonProps) => {
     btn: true,
     'btn-xl': props.xl,
     'btn-base': !props.xl,
-    'btn-primary': true,
+    'btn-primary':
+      props.color === ButtonColor.PRIMARY || props.color === undefined,
+    'btn-discord': props.color === ButtonColor.DISCORD,
   });
 
   return (
@@ -38,10 +46,18 @@ const Button = (props: IButtonProps) => {
           .btn-primary:hover {
             @apply bg-primary-600;
           }
+
+          .btn-discord {
+            @apply text-white bg-discord-100;
+          }
+
+          .btn-discord:hover {
+            @apply text-white bg-discord-200;
+          }
         `}
       </style>
     </div>
   );
 };
 
-export { Button };
+export { Button, ButtonColor };
