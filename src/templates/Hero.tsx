@@ -28,15 +28,9 @@ const Hero = () => (
         }
         description="The easiest way to ask something to the AI."
         button={
-          <a
-            href="https://discord.com/oauth2/authorize?client_id=1335557436349874346"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button xl color={ButtonColor.DISCORD}>
-              Add to Discord
-            </Button>
-          </a>
+          <Button xl color={ButtonColor.DISCORD}>
+            Add to Discord
+          </Button>
         }
       />
     </Section>
