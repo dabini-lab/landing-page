@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "landing-page-384bf"
-  }
+    "default": "landing-page-384bf",
+    "landing-page": "landing-page-384bf"
+  },
+  "targets": {},
+  "etags": {}
 }

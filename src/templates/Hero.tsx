@@ -1,9 +1,19 @@
+import Link from 'next/link';
+
+import { signInWithGoogle } from '@/lib/firebase/auth';
+
 import { Background } from '../background/Background';
 import { Button, ButtonColor } from '../button/Button';
 import { HeroOneButton } from '../hero/HeroOneButton';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from './Logo';
+
+const handleSignIn = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  event.preventDefault();
+  console.log('Sign in clicked');
+  signInWithGoogle();
+};
 
 const Hero = () => (
   <Background color="bg-gray-100">
@@ -14,7 +24,11 @@ const Hero = () => (
             GitHub
           </Link> */}
         </li>
-        <li>{/* <Link href="/">Sign in</Link> */}</li>
+        <li>
+          <Link href="/" onClick={handleSignIn}>
+            Sign in
+          </Link>
+        </li>
       </NavbarTwoColumns>
     </Section>
 
