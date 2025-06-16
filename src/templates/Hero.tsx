@@ -67,7 +67,7 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
                     <img
                       className="profileImage"
                       src={user.photoURL || '/profile.svg'}
-                      alt={user.email}
+                      alt={`Profile photo of ${user.displayName || 'User'}`}
                     />
                     {user.displayName}
                   </p>
