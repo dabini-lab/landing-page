@@ -41,7 +41,7 @@ const handleSignIn = (event: React.MouseEvent<HTMLAnchorElement>) => {
   signInWithGoogle();
 };
 
-const handleSignOut = (event: React.MouseEvent<HTMLAnchorElement>) => {
+const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
   event.preventDefault();
   deleteCookie('__session');
   signOut();
@@ -60,11 +60,30 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
             </Link> */}
           </li>
           {user ? (
-            <li>
-              <Link href="/" onClick={handleSignOut}>
-                Sign out
-              </Link>
-            </li>
+            <>
+              <li>
+                <div className="profile">
+                  <p className="flex items-center gap-2">
+                    <img
+                      className="profileImage"
+                      src={user.photoURL || '/profile.svg'}
+                      alt={`Profile photo of ${user.displayName || 'User'}`}
+                    />
+                    {user.displayName}
+                  </p>
+                </div>
+              </li>
+
+              <li>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="signOutButton"
+                >
+                  Sign Out
+                </button>
+              </li>
+            </>
           ) : (
             <li>
               <Link href="/" onClick={handleSignIn}>
