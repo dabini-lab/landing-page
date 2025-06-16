@@ -1,6 +1,6 @@
 export const AppConfig = {
   site_name: 'Dabini',
-  title: 'Dabini landing page',
-  description: 'Dabini landing page with Nextjs Boilerplate and Tailwind CSS',
+  title: 'Dabini',
+  description: 'Dabini - Your AI Chatbot in SNS chats',
   locale: 'en',
 };
