@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "cookies-next": "^6.0.0",
     "firebase": "^11.8.1",
     "next": "^14.1.0",
     "next-seo": "^6.4.0",
