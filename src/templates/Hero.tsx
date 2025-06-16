@@ -75,9 +75,9 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
               </li>
 
               <li>
-                <a href="#" onClick={handleSignOut}>
+                <button type="button" onClick={handleSignOut} className="signOutButton">
                   Sign Out
-                </a>
+                </button>
               </li>
             </>
           ) : (
