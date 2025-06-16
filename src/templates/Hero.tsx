@@ -60,11 +60,26 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
             </Link> */}
           </li>
           {user ? (
-            <li>
-              <Link href="/" onClick={handleSignOut}>
-                Sign out
-              </Link>
-            </li>
+            <>
+              <li>
+                <div className="profile">
+                  <p className="flex items-center gap-2">
+                    <img
+                      className="profileImage"
+                      src={user.photoURL || '/profile.svg'}
+                      alt={user.email}
+                    />
+                    {user.displayName}
+                  </p>
+                </div>
+              </li>
+
+              <li>
+                <a href="#" onClick={handleSignOut}>
+                  Sign Out
+                </a>
+              </li>
+            </>
           ) : (
             <li>
               <Link href="/" onClick={handleSignIn}>
