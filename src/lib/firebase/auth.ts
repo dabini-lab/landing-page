@@ -22,18 +22,9 @@ export function onIdTokenChanged(cb: (user: User | null) => void): Unsubscribe {
 export async function signInWithGoogle(): Promise<void> {
   const provider = new GoogleAuthProvider();
 
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    console.error('Error signing in with Google', error);
-  }
+  await signInWithPopup(auth, provider);
 }
 
 export async function signOut(): Promise<void> {
-  try {
-    return await auth.signOut();
-  } catch (error) {
-    console.error('Error signing out with Google', error);
-    throw error;
-  }
+  return auth.signOut();
 }
