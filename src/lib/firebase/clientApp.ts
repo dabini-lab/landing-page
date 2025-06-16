@@ -13,7 +13,10 @@ const firebaseConfig = {
 
 // Use automatic initialization
 // https://firebase.google.com/docs/app-hosting/firebase-sdks#initialize-with-no-arguments
-export const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
+export const firebaseApp: FirebaseApp =
+  process.env.NODE_ENV === 'development'
+    ? initializeApp(firebaseConfig)
+    : initializeApp();
 
 export const auth: Auth = getAuth(firebaseApp);
 // export const db: Firestore = getFirestore(firebaseApp);
