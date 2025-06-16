@@ -3,7 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-module.exports = withBundleAnalyzer({
+const config = {
   eslint: {
     dirs: ['.'],
   },
@@ -18,4 +18,6 @@ module.exports = withBundleAnalyzer({
   images: {
     unoptimized: true,
   },
-});
+};
+
+module.exports = withBundleAnalyzer(config);
