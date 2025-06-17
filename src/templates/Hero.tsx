@@ -65,7 +65,7 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
                 <div className="profile">
                   <p className="flex items-center gap-2">
                     <img
-                      className="profileImage"
+                      className="profileImage size-6 rounded-full object-cover"
                       src={user.photoURL || '/profile.svg'}
                       alt={`Profile photo of ${user.displayName || 'User'}`}
                     />
@@ -74,15 +74,20 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
                 </div>
               </li>
 
-              <li>
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="signOutButton"
-                >
-                  Sign Out
-                </button>
-              </li>
+              <div className="menu group relative">
+                <button type="button" className="cursor-pointer">...</button>
+                <ul className="invisible absolute right-0 top-full z-10 mt-1 rounded border border-gray-200 bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="signOutButton block w-full whitespace-nowrap px-4 py-2 text-left hover:bg-gray-100"
+                    >
+                      Sign Out
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </>
           ) : (
             <li>
