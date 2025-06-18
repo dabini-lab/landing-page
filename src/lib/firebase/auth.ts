@@ -1,4 +1,5 @@
 import {
+  deleteUser,
   GoogleAuthProvider,
   onAuthStateChanged as _onAuthStateChanged,
   onIdTokenChanged as _onIdTokenChanged,
@@ -28,3 +29,19 @@ export async function signInWithGoogle(): Promise<void> {
 export async function signOut(): Promise<void> {
   return auth.signOut();
 }
+
+export const deleteUserAccount = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('No user is currently signed in');
+  }
+
+  try {
+    await deleteUser(user);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete account: ${error.message}`);
+    }
+    throw new Error('Failed to delete account');
+  }
+};
