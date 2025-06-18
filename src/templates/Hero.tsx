@@ -2,6 +2,7 @@
 
 import { deleteCookie, setCookie } from 'cookies-next';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import {
@@ -49,6 +50,11 @@ const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
 
 const Hero = ({ initialUser }: { initialUser: any }) => {
   const user = useUserSession(initialUser);
+  const router = useRouter();
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+  };
 
   return (
     <Background color="bg-gray-100">
@@ -62,7 +68,11 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
           {user ? (
             <>
               <li>
-                <div className="profile">
+                <button
+                  type="button"
+                  onClick={handleProfileClick}
+                  className="profile cursor-pointer rounded px-2 py-1 transition-colors hover:bg-gray-50"
+                >
                   <p className="flex items-center gap-2">
                     <img
                       className="profileImage size-6 rounded-full object-cover"
@@ -71,11 +81,13 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
                     />
                     {user.displayName}
                   </p>
-                </div>
+                </button>
               </li>
 
               <div className="menu group relative">
-                <button type="button" className="cursor-pointer">...</button>
+                <button type="button" className="cursor-pointer">
+                  ...
+                </button>
                 <ul className="invisible absolute right-0 top-full z-10 mt-1 rounded border border-gray-200 bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
                   <li>
                     <button
