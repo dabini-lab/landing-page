@@ -85,7 +85,7 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
               </li>
 
               <div className="menu group relative">
-                <button type="button" className="cursor-pointer">
+                <button type="button" className="cursor-pointer" aria-label="Open menu">
                   ...
                 </button>
                 <ul className="invisible absolute right-0 top-full z-10 mt-1 rounded border border-gray-200 bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
