@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { Meta } from '../layout/Meta';
 import { AppConfig } from '../utils/AppConfig';
+import { Footer } from './Footer';
 import { Hero } from './Hero';
 
 const Base = () => {
@@ -30,7 +31,7 @@ const Base = () => {
       {/* <Sponsors /> */}
       {/* <VerticalFeatures /> */}
       {/* <Banner /> */}
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };
