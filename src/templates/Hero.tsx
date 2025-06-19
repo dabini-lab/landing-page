@@ -61,9 +61,7 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
       <Section yPadding="py-6">
         <NavbarTwoColumns logo={<Logo xl />}>
           <li>
-            {/* <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
-              GitHub
-            </Link> */}
+            <Link href="/pricing">가격</Link>
           </li>
           {user ? (
             <>
@@ -119,11 +117,12 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
         <HeroOneButton
           title={
             <>
-              {'An AI chatbot that\n'}
-              <span className="text-primary-500">you have always desired</span>
+              {'내 메신저에서 대답하는 AI 챗봇'}
+              <br />
+              <span className="text-primary-500">Dabini</span>
             </>
           }
-          description="The easiest way to ask something to the AI."
+          description="AI를 사용하는 가장 쉬운 방법."
           button={
             <Button xl color={ButtonColor.DISCORD}>
               Add to Discord
