@@ -117,7 +117,8 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
         <HeroOneButton
           title={
             <>
-              {'내 메신저에서 대답하는 AI 챗봇\n'}
+              {'내 메신저에서 대답하는 AI 챗봇'}
+              <br />
               <span className="text-primary-500">Dabini</span>
             </>
           }
