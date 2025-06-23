@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Script from 'next/script';
+import { useEffect, useState } from 'react';
 
 import { Background } from '../background/Background';
 import { Button, ButtonColor } from '../button/Button';
@@ -9,33 +9,60 @@ import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from './Logo';
 
+// TossPayments SDK 타입 선언
+declare global {
+  interface Window {
+    TossPayments: any;
+  }
+}
+
 const Pricing = () => {
-  const handlePremiumPurchase = () => {
-    // Check if TossPayments is available
-    if (typeof window === 'undefined' || !(window as any).TossPayments) {
-      return;
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [, setTossPayments] = useState<any>(null);
+  const [payment, setPayment] = useState<any>(null);
+
+  useEffect(() => {
+    // TossPayments SDK 스크립트 로드
+    const script = document.createElement('script');
+    script.src = 'https://js.tosspayments.com/v2/standard';
+    script.async = true;
+    script.onload = () => {
+      // SDK 초기화
+      const clientKey = 'test_ck_kYG57Eba3GZBpWv6bQZz8pWDOxmA';
+      const tossPaymentsInstance = window.TossPayments(clientKey);
+      const paymentInstance = tossPaymentsInstance.payment({
+        customerKey: window.TossPayments.ANONYMOUS,
+      });
+
+      setTossPayments(tossPaymentsInstance);
+      setPayment(paymentInstance);
+      setIsScriptLoaded(true);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const handlePremiumPurchase = async () => {
+    if (!payment) return;
+
+    try {
+      await payment.requestBillingAuth({
+        method: 'CARD',
+        successUrl: `${window.location.origin}/success`,
+        failUrl: `${window.location.origin}/fail`,
+        customerEmail: 'customer123@gmail.com',
+        customerName: '김토스',
+      });
+    } catch (error) {
+      console.error('결제 요청 실패:', error);
     }
-
-    // Initialize Toss Payments
-    const tossPayments = (window as any).TossPayments(
-      'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq',
-    ); // Replace with your client key
-
-    // Request billing key for subscription
-    tossPayments.requestBillingAuth('카드', {
-      customerKey: `customer_${Date.now()}`,
-      successUrl: `${window.location.origin}/subscription/success`,
-      failUrl: `${window.location.origin}/subscription/fail`,
-    });
   };
 
   return (
     <>
-      <Script
-        src="https://js.tosspayments.com/v1/payment"
-        strategy="lazyOnload"
-        onLoad={() => {}}
-      />
       <Background color="bg-gray-100">
         <Section yPadding="py-6">
           <NavbarTwoColumns logo={<Logo xl />}>
@@ -120,10 +147,13 @@ const Pricing = () => {
                 <div className="mt-8 text-center">
                   <button
                     onClick={handlePremiumPurchase}
-                    className="focus:outline-none"
+                    className="focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!isScriptLoaded}
                   >
                     <Button xl color={ButtonColor.PRIMARY}>
-                      프리미엄 구매
+                      {isScriptLoaded
+                        ? '프리미엄 구매'
+                        : '결제 모듈 로딩 중...'}
                     </Button>
                   </button>
                   <p className="mt-4 text-sm text-gray-500">
