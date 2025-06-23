@@ -5,6 +5,7 @@ import { Background } from '../background/Background';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from '../templates/Logo';
+import { PolicyCard } from './PolicyCard';
 
 const RefundPolicy = () => {
   return (
@@ -46,9 +47,9 @@ const RefundPolicy = () => {
                       strokeLinejoin="round"
                       strokeWidth={2}
                       d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                  }
+                    />
+                  </svg>
+                }
                 description={
                   <>
                     서비스에 만족하지 않으시는 경우,{' '}
