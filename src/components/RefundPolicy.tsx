@@ -16,7 +16,7 @@ const RefundPolicy = () => {
             <Link href="/">홈</Link>
           </li>
           <li>
-            <Link href="/pricing">가격</Link>
+            <Link href="/pricing">구매</Link>
           </li>
         </NavbarTwoColumns>
       </Section>
