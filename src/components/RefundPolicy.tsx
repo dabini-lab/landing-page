@@ -32,36 +32,34 @@ const RefundPolicy = () => {
 
             <div className="space-y-8">
               {/* 환불 요청 절차 */}
-              <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
-                <div className="mb-6 flex items-center">
-                  <div className="mr-4 flex size-12 items-center justify-center rounded-xl bg-green-100">
-                    <svg
-                      className="size-6 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              <PolicyCard
+                title="환불 요청 절차"
+                icon={
+                  <svg
+                    className="size-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                       />
                     </svg>
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    환불 요청 절차
-                  </h2>
-                </div>
-                <p className="text-lg leading-relaxed text-gray-600">
-                  서비스에 만족하지 않으시는 경우,{' '}
-                  <span className="font-semibold text-blue-600">
-                    구매일로부터 7일 이내
-                  </span>
-                  에 환불을 요청하실 수 있습니다. 환불을 원하시는 경우
-                  고객지원팀으로 연락해 주시기 바랍니다.
-                </p>
-              </div>
+                  }
+                description={
+                  <>
+                    서비스에 만족하지 않으시는 경우,{' '}
+                    <span className="font-semibold text-blue-600">
+                      구매일로부터 7일 이내
+                    </span>
+                    에 환불을 요청하실 수 있습니다. 환불을 원하시는 경우
+                    고객지원팀으로 연락해 주시기 바랍니다.
+                  </>
+                }
+              />
 
               {/* 환불 조건 */}
               <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
