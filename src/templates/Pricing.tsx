@@ -95,6 +95,14 @@ const Pricing = () => {
                 <Button xl color={ButtonColor.PRIMARY}>
                   프리미엄 구매
                 </Button>
+                <p className="mt-4 text-sm text-gray-500">
+                  <Link
+                    href="/refund"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    환불 정책
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
