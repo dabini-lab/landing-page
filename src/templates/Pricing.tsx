@@ -115,11 +115,11 @@ const Pricing = () => {
               </ul>
 
               <div className="mt-8 text-center">
-                <div onClick={handlePremiumPurchase} className="cursor-pointer">
+                <button onClick={handlePremiumPurchase} className="focus:outline-none">
                   <Button xl color={ButtonColor.PRIMARY}>
                     프리미엄 구매
                   </Button>
-                </div>
+                </button>
                 <p className="mt-4 text-sm text-gray-500">
                   <Link
                     href="/refund"
