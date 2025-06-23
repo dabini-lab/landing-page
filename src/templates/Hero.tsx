@@ -128,11 +128,15 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
           }
           description="AI를 사용하는 가장 쉬운 방법."
           button={
-            <div onClick={handleDiscordInstall} className="cursor-pointer">
+            <button
+              type="button"
+              onClick={handleDiscordInstall}
+              className="cursor-pointer"
+            >
               <Button xl color={ButtonColor.DISCORD}>
                 Discord에 설치
               </Button>
-            </div>
+            </button>
           }
         />
       </Section>
