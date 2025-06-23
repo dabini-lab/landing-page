@@ -10,18 +10,14 @@ import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from './Logo';
 
 const Pricing = () => {
-  useEffect(() => {
-    // Load Toss Payments script
-    const script = document.createElement('script');
-    script.src = 'https://js.tosspayments.com/v1/payment';
-    script.async = true;
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
+  // Load Toss Payments script using Next.js's <Script> component
+  <Script
+    src="https://js.tosspayments.com/v1/payment"
+    strategy="lazyOnload"
+    onLoad={() => {
+      console.log('Toss Payments script loaded successfully');
+    }}
+  />
   const handlePremiumPurchase = () => {
     // Initialize Toss Payments
     const tossPayments = (window as any).TossPayments(
