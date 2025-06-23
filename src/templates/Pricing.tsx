@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 import { Background } from '../background/Background';
 import { Button, ButtonColor } from '../button/Button';
@@ -9,6 +10,32 @@ import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from './Logo';
 
 const Pricing = () => {
+  useEffect(() => {
+    // Load Toss Payments script
+    const script = document.createElement('script');
+    script.src = 'https://js.tosspayments.com/v1/payment';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const handlePremiumPurchase = () => {
+    // Initialize Toss Payments
+    const tossPayments = (window as any).TossPayments(
+      'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq',
+    ); // Replace with your client key
+
+    // Request billing key for subscription
+    tossPayments.requestBillingAuth('카드', {
+      customerKey: `customer_${Date.now()}`,
+      successUrl: `${window.location.origin}/subscription/success`,
+      failUrl: `${window.location.origin}/subscription/fail`,
+    });
+  };
+
   return (
     <Background color="bg-gray-100">
       <Section yPadding="py-6">
@@ -17,14 +44,14 @@ const Pricing = () => {
             <Link href="/">홈</Link>
           </li>
           <li>
-            <Link href="/pricing">가격</Link>
+            <Link href="/pricing">구매</Link>
           </li>
         </NavbarTwoColumns>
       </Section>
 
       <Section yPadding="pt-20 pb-32">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900">가격</h1>
+          <h1 className="text-5xl font-bold text-gray-900">구매</h1>
           <p className="mt-4 text-xl text-gray-600">
             나에게 맞는 플랜을 선택하기.
           </p>
@@ -92,9 +119,11 @@ const Pricing = () => {
               </ul>
 
               <div className="mt-8 text-center">
-                <Button xl color={ButtonColor.PRIMARY}>
-                  프리미엄 구매
-                </Button>
+                <div onClick={handlePremiumPurchase} className="cursor-pointer">
+                  <Button xl color={ButtonColor.PRIMARY}>
+                    프리미엄 구매
+                  </Button>
+                </div>
                 <p className="mt-4 text-sm text-gray-500">
                   <Link
                     href="/refund"

@@ -56,12 +56,16 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
     router.push('/profile');
   };
 
+  const handleDiscordInstall = () => {
+    router.push('/pricing');
+  };
+
   return (
     <Background color="bg-gray-100">
       <Section yPadding="py-6">
         <NavbarTwoColumns logo={<Logo xl />}>
           <li>
-            <Link href="/pricing">가격</Link>
+            <Link href="/pricing">구매</Link>
           </li>
           {user ? (
             <>
@@ -124,9 +128,11 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
           }
           description="AI를 사용하는 가장 쉬운 방법."
           button={
-            <Button xl color={ButtonColor.DISCORD}>
-              Add to Discord
-            </Button>
+            <div onClick={handleDiscordInstall} className="cursor-pointer">
+              <Button xl color={ButtonColor.DISCORD}>
+                Discord에 설치
+              </Button>
+            </div>
           }
         />
       </Section>
