@@ -1,5 +1,15 @@
+import Link from 'next/link';
+
 const FooterCopyright = () => (
   <div className="footer-copyright">
+    <div className="mb-2">
+      <Link href="/terms" className="mr-4 hover:underline">
+        이용약관
+      </Link>
+      <Link href="/privacy" className="hover:underline">
+        개인정보처리방침
+      </Link>
+    </div>
     Copyright © 다빈이랩. All Rights Reserved.
     {/*
      * PLEASE READ THIS SECTION
