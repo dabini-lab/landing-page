@@ -2,7 +2,9 @@
 
 import { type FirebaseApp, initializeApp } from 'firebase/app';
 import { type Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
-// import { type Firestore, getFirestore } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
+
 // import { type FirebaseStorage, getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -19,7 +21,7 @@ export const firebaseApp: FirebaseApp =
     : initializeApp();
 
 export const auth: Auth = getAuth(firebaseApp);
-// export const db: Firestore = getFirestore(firebaseApp);
+export const db: Firestore = getFirestore(firebaseApp);
 // export const storage: FirebaseStorage = getStorage(firebaseApp);
 
 if (process.env.NODE_ENV === 'development') {
