@@ -82,7 +82,8 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
 
           <PaymentButton
             onClick={onSubscriptionPayment}
-            disabled={!isPaymentReady || isLoading}
+            // disabled={!isPaymentReady || isLoading}
+            disabled
           >
             {isPaymentReady ? '정기 구독 시작' : '결제 모듈 로딩 중...'}
           </PaymentButton>
