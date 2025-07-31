@@ -29,7 +29,7 @@ const useUserSession = (initialUser: object | any) => {
         try {
           await createUserPremiumDocument(user);
         } catch (error) {
-          // Silently handle any errors - document might already exist or there might be network issues
+          console.error('Error creating user premium document:', error);
         }
       } else {
         await deleteCookie('__session');
