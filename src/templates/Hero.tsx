@@ -2,6 +2,7 @@
 
 import { deleteCookie, setCookie } from 'cookies-next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import {
@@ -29,7 +30,7 @@ const useUserSession = (initialUser: object | any) => {
         try {
           await createUserPremiumDocument(user);
         } catch (error) {
-          console.error('Error creating user premium document:', error);
+          // console.error('Error creating user premium document:', error);
         }
       } else {
         await deleteCookie('__session');
@@ -57,9 +58,9 @@ const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
 
 const Hero = ({ initialUser }: { initialUser: any }) => {
   const user = useUserSession(initialUser);
+  const router = useRouter();
 
   const handleUserClick = () => {
-    const router = useRouter();
     router.push('/user');
   };
 

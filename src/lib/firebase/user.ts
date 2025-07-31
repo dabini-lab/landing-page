@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   runTransaction,
   type Timestamp,
 } from 'firebase/firestore';
