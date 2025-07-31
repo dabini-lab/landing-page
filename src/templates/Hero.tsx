@@ -59,7 +59,8 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
   const user = useUserSession(initialUser);
 
   const handleUserClick = () => {
-    window.location.href = '/user';
+    const router = useRouter();
+    router.push('/user');
   };
 
   const handleDiscordInstall = () => {
