@@ -42,15 +42,13 @@ export const getUserPremiumData = async (
   const premiumCollection = collection(userDb, 'premium');
   const userDocRef = doc(premiumCollection, uid);
 
-  return runTransaction(userDb, async (transaction) => {
-    const docSnap = await transaction.get(userDocRef);
+  const docSnap = await getDoc(userDocRef);
 
-    if (docSnap.exists()) {
-      return docSnap.data() as UserPremiumData;
-    }
+  if (docSnap.exists()) {
+    return docSnap.data() as UserPremiumData;
+  }
 
-    return null;
-  });
+  return null;
 };
 
 export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
