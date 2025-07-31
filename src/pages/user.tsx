@@ -13,7 +13,7 @@ import {
   signOut,
 } from '@/lib/firebase/auth';
 
-export default function ProfilePage() {
+export default function UserPage() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');

@@ -2,7 +2,6 @@
 
 import { deleteCookie, setCookie } from 'cookies-next';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import {
@@ -10,6 +9,7 @@ import {
   signInWithGoogle,
   signOut,
 } from '@/lib/firebase/auth';
+import { createUserPremiumDocument } from '@/lib/firebase/user';
 
 import { Background } from '../background/Background';
 import { Button, ButtonColor } from '../button/Button';
@@ -24,6 +24,13 @@ const useUserSession = (initialUser: object | any) => {
       if (user) {
         const idToken = await user.getIdToken();
         await setCookie('__session', idToken);
+
+        // Ensure user premium document exists (for cases where user signs in through other means)
+        try {
+          await createUserPremiumDocument(user);
+        } catch (error) {
+          // Silently handle any errors - document might already exist or there might be network issues
+        }
       } else {
         await deleteCookie('__session');
       }
@@ -50,14 +57,16 @@ const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
 
 const Hero = ({ initialUser }: { initialUser: any }) => {
   const user = useUserSession(initialUser);
-  const router = useRouter();
 
-  const handleProfileClick = () => {
-    router.push('/profile');
+  const handleUserClick = () => {
+    window.location.href = '/user';
   };
 
   const handleDiscordInstall = () => {
-    router.push('/pricing');
+    window.open(
+      'https://discord.com/oauth2/authorize?client_id=1335557436349874346',
+      '_blank',
+    );
   };
 
   return (
@@ -72,7 +81,7 @@ const Hero = ({ initialUser }: { initialUser: any }) => {
               <li>
                 <button
                   type="button"
-                  onClick={handleProfileClick}
+                  onClick={handleUserClick}
                   className="profile cursor-pointer rounded px-2 py-1 transition-colors hover:bg-gray-50"
                 >
                   <p className="flex items-center gap-2">
