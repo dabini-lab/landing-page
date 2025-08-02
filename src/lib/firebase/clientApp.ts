@@ -10,8 +10,8 @@ import {
 // import { type FirebaseStorage, getStorage } from 'firebase/storage';
 
 // Firebase configuration for development (emulator)
-const firebaseConfig = {
-  projectId: 'landing-page-384bf',
+const devFirebaseConfig = {
+  projectId: 'dabini-dev',
   authDomain: '127.0.0.1',
   apiKey: 'demo-api-key', // Valid dummy key for emulator
 };
@@ -21,7 +21,7 @@ function initializeFirebaseApp(): FirebaseApp {
   // Client-side: initialize Firebase
   if (getApps().length === 0) {
     if (process.env.NODE_ENV === 'development') {
-      return initializeApp(firebaseConfig);
+      return initializeApp(devFirebaseConfig);
     }
     // Production: use automatic initialization for Firebase App Hosting
     return initializeApp();
