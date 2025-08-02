@@ -18,11 +18,6 @@ const firebaseConfig = {
 
 // Initialize Firebase app with proper environment handling
 function initializeFirebaseApp(): FirebaseApp {
-  if (typeof window === 'undefined') {
-    // Server-side: return empty object to prevent initialization errors
-    return {} as FirebaseApp;
-  }
-
   // Client-side: initialize Firebase
   if (getApps().length === 0) {
     if (process.env.NODE_ENV === 'development') {
@@ -36,32 +31,11 @@ function initializeFirebaseApp(): FirebaseApp {
 }
 
 export const firebaseApp: FirebaseApp = initializeFirebaseApp();
-
-// Initialize auth and firestore only on client-side
-function getAuthInstance(): Auth | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  return getAuth(firebaseApp);
-}
-
-function getFirestoreInstance(): Firestore | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  return getFirestore(firebaseApp, 'user');
-}
-
-export const auth = getAuthInstance();
-export const userDb = getFirestoreInstance();
+export const auth: Auth = getAuth(firebaseApp);
+export const userDb: Firestore = getFirestore(firebaseApp, 'user');
 
 // Connect to emulators only in development mode on client-side
-if (
-  typeof window !== 'undefined' &&
-  process.env.NODE_ENV === 'development' &&
-  auth &&
-  userDb
-) {
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   try {
     connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
       disableWarnings: true,
