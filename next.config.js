@@ -1,7 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+/* eslint-disable import/no-extraneous-dependencies, @typescript-eslint/no-var-requires, no-console, import/no-dynamic-require, global-require */
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,4 +19,18 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+// Conditionally apply bundle analyzer only when ANALYZE=true and the package is available
+let exportConfig = nextConfig;
+
+if (process.env.ANALYZE === 'true') {
+  try {
+    const withBundleAnalyzer = require('@next/bundle-analyzer')({
+      enabled: true,
+    });
+    exportConfig = withBundleAnalyzer(nextConfig);
+  } catch (error) {
+    console.warn('Bundle analyzer not available, proceeding without it');
+  }
+}
+
+module.exports = exportConfig;
