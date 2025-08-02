@@ -17,10 +17,6 @@ export interface UserPremiumData {
 }
 
 export const createUserPremiumDocument = async (user: User): Promise<void> => {
-  if (!userDb) {
-    throw new Error('Firestore not initialized');
-  }
-
   const premiumCollection = collection(userDb, 'premium');
 
   // Use user.uid as document ID to enforce uniqueness naturally
@@ -44,10 +40,6 @@ export const createUserPremiumDocument = async (user: User): Promise<void> => {
 export const getUserPremiumData = async (
   uid: string,
 ): Promise<UserPremiumData | null> => {
-  if (!userDb) {
-    throw new Error('Firestore not initialized');
-  }
-
   const premiumCollection = collection(userDb, 'premium');
   const userDocRef = doc(premiumCollection, uid);
 
@@ -61,10 +53,6 @@ export const getUserPremiumData = async (
 };
 
 export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
-  if (!userDb) {
-    throw new Error('Firestore not initialized');
-  }
-
   const premiumCollection = collection(userDb, 'premium');
   const userDocRef = doc(premiumCollection, uid);
 
