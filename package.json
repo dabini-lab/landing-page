@@ -3,15 +3,14 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && (mkdir -p .next/standalone/.next && cp .next/standalone/routes-manifest.json .next/standalone/.next/routes-manifest.json || true)",
     "start": "next start",
     "build-stats": "cross-env ANALYZE=true npm run build",
     "build-prod": "run-s clean build",
     "clean": "rimraf .next .swc out",
     "lint": "next lint",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "check-types": "tsc --noEmit --pretty",
-    "prepare": "husky install"
+    "check-types": "tsc --noEmit --pretty"
   },
   "dependencies": {
     "classnames": "^2.5.1",

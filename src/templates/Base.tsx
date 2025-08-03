@@ -1,8 +1,10 @@
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
 import { Meta } from '../layout/Meta';
+import { auth } from '../lib/firebase/clientApp';
 import { AppConfig } from '../utils/AppConfig';
+import { Footer } from './Footer';
 import { Hero } from './Hero';
 
 const Base = () => {
@@ -10,7 +12,6 @@ const Base = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -30,7 +31,7 @@ const Base = () => {
       {/* <Sponsors /> */}
       {/* <VerticalFeatures /> */}
       {/* <Banner /> */}
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };

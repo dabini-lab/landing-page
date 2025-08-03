@@ -1,9 +1,16 @@
-import { AppConfig } from '../utils/AppConfig';
+import Link from 'next/link';
 
 const FooterCopyright = () => (
   <div className="footer-copyright">
-    © Copyright {new Date().getFullYear()} {AppConfig.title}. Made with{' '}
-    <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>.
+    <div className="mb-2">
+      <Link href="/terms" className="mr-4 hover:underline">
+        이용약관
+      </Link>
+      <Link href="/privacy" className="hover:underline">
+        개인정보처리방침
+      </Link>
+    </div>
+    Copyright © 다빈이랩. All Rights Reserved.
     {/*
      * PLEASE READ THIS SECTION
      * I'm an indie maker with limited resources and funds, I'll really appreciate if you could have a link to my website.

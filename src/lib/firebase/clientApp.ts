@@ -1,30 +1,52 @@
 'use client';
 
-import { type FirebaseApp, initializeApp } from 'firebase/app';
+import { type FirebaseApp, getApps, initializeApp } from 'firebase/app';
 import { type Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
-// import { type Firestore, getFirestore } from 'firebase/firestore';
+import {
+  connectFirestoreEmulator,
+  type Firestore,
+  getFirestore,
+} from 'firebase/firestore';
 // import { type FirebaseStorage, getStorage } from 'firebase/storage';
 
-const firebaseConfig = {
-  projectId: 'landing-page-384bf',
-  authDomain: 'localhost',
-  apiKey: process.env.FIREBASE_API_KEY || 'PUT_IN_A_DUMMY_API_KEY',
+// Firebase configuration for development (emulator)
+const devFirebaseConfig = {
+  projectId: 'dabini-dev',
+  authDomain: '127.0.0.1',
+  apiKey: 'demo-api-key', // Valid dummy key for emulator
 };
 
-// Use automatic initialization
-// https://firebase.google.com/docs/app-hosting/firebase-sdks#initialize-with-no-arguments
-export const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
+// Initialize Firebase app with proper environment handling
+function initializeFirebaseApp(): FirebaseApp {
+  // Client-side: initialize Firebase
+  if (getApps().length === 0) {
+    if (process.env.NODE_ENV === 'development') {
+      return initializeApp(devFirebaseConfig);
+    }
+    // Production: use automatic initialization for Firebase App Hosting
+    return initializeApp();
+  }
 
+  return getApps()[0]!;
+}
+
+export const firebaseApp: FirebaseApp = initializeFirebaseApp();
 export const auth: Auth = getAuth(firebaseApp);
-// export const db: Firestore = getFirestore(firebaseApp);
-// export const storage: FirebaseStorage = getStorage(firebaseApp);
+export const userDb: Firestore = getFirestore(firebaseApp, 'user');
 
-if (process.env.NODE_ENV === 'development') {
+// Connect to emulators only in development mode on client-side
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   try {
-    connectAuthEmulator(auth, 'http://localhost:9099', {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
       disableWarnings: true,
     });
   } catch (error) {
-    // Emulator already connected
+    // Auth emulator already connected or unavailable
+  }
+
+  try {
+    connectFirestoreEmulator(userDb, '127.0.0.1', 8080);
+  } catch (error) {
+    // Firestore emulator already connected or unavailable
   }
 }
