@@ -20,7 +20,17 @@ const formatDate = (timestamp: any): string => {
 
   // Handle Firestore Timestamp
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  return date.toLocaleDateString('ko-KR', {
+
+  // Use UTC methods to get UTC date components
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+
+  // Create a new date with UTC components to format in UTC
+  const utcDate = new Date(Date.UTC(year, month, day));
+
+  return utcDate.toLocaleDateString('ko-KR', {
+    timeZone: 'UTC',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
