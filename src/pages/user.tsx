@@ -15,11 +15,17 @@ import {
 import { getUserPremiumData, type UserPremiumData } from '@/lib/firebase/user';
 
 // Helper function to format timestamp to readable date
-const formatDate = (timestamp: any): string => {
+type TimestampLike = { toDate: () => Date };
+const formatDate = (
+  timestamp: TimestampLike | Date | string | null | undefined
+): string => {
   if (!timestamp) return '없음';
 
   // Handle Firestore Timestamp
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  const date =
+    typeof timestamp === 'object' && timestamp !== null && 'toDate' in timestamp
+      ? (timestamp as TimestampLike).toDate()
+      : new Date(timestamp as Date | string);
 
   // Use UTC methods to get UTC date components
   const year = date.getUTCFullYear();
