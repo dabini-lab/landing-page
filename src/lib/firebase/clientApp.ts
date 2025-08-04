@@ -11,7 +11,7 @@ import {
 
 // Firebase configuration for development (emulator)
 const devFirebaseConfig = {
-  projectId: 'dabini-dev',
+  projectId: 'dabini-stg',
   authDomain: '127.0.0.1',
   apiKey: 'demo-api-key', // Valid dummy key for emulator
 };
