@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { useAuth } from './useAuth';
+
 interface TossPaymentsHook {
   isScriptLoaded: boolean;
   payment: any;
@@ -13,6 +15,7 @@ export const useTossPayments = (): TossPaymentsHook => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [payment, setPayment] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadTossPaymentsScript = () => {
@@ -31,13 +34,19 @@ export const useTossPayments = (): TossPaymentsHook => {
 
           const tossPaymentsInstance = window.TossPayments(clientKey);
 
+          // 사용자별 고유한 customerKey 생성
+          const customerKey = user
+            ? `customer_${user.uid}`
+            : `anonymous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
           const paymentInstance = tossPaymentsInstance.payment({
-            customerKey: window.TossPayments.ANONYMOUS,
+            customerKey,
           });
 
           setPayment(paymentInstance);
           setIsScriptLoaded(true);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('TossPayments 초기화 실패:', error);
         } finally {
           setIsLoading(false);
@@ -45,6 +54,7 @@ export const useTossPayments = (): TossPaymentsHook => {
       };
 
       script.onerror = () => {
+        // eslint-disable-next-line no-console
         console.error('TossPayments SDK 로드 실패');
         setIsLoading(false);
       };
@@ -59,7 +69,7 @@ export const useTossPayments = (): TossPaymentsHook => {
     };
 
     return loadTossPaymentsScript();
-  }, []);
+  }, [user]);
 
   return { isScriptLoaded, payment, isLoading };
 };
@@ -74,8 +84,8 @@ export const getPaymentUrls = () => {
   return {
     successUrl: `${baseUrl}/pricing/success`,
     failUrl: `${baseUrl}/pricing/fail`,
-    billingSuccessUrl: `${baseUrl}/billing-success`,
-    billingFailUrl: `${baseUrl}/billing-fail`,
+    billingSuccessUrl: `${baseUrl}/pricing/success`,
+    billingFailUrl: `${baseUrl}/pricing/fail`,
   };
 };
 

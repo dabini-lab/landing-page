@@ -159,10 +159,13 @@ export function useConfirmPayment(options?: UseConfirmPaymentOptions) {
       if (error.status && error.status >= 400 && error.status < 500) {
         return false;
       }
-      // 최대 2번까지 재시도
-      return failureCount < 2;
+      // 최대 3번까지 재시도 (더 많은 재시도)
+      return failureCount < 3;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: (attemptIndex) => {
+      // 더 긴 대기 시간: 1초, 2초, 4초
+      return Math.min(1000 * 2 ** attemptIndex, 10000);
+    },
     ...options, // 사용자 정의 옵션으로 덮어씌움
   });
 }
@@ -209,10 +212,10 @@ export function useConfirmPaymentQuery(
       if (error.status && error.status >= 400 && error.status < 500) {
         return false;
       }
-      // 최대 2번까지 재시도
-      return failureCount < 2;
+      // 최대 3번까지 재시도
+      return failureCount < 3;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     ...options,
   });
 }

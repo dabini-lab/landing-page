@@ -73,17 +73,13 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
         </ul>
 
         <div className="mt-8 space-y-4">
-          <PaymentButton
-            onClick={onOneTimePayment}
-            disabled={!isPaymentReady || isLoading}
-          >
-            {isPaymentReady ? '일회성 결제 (₩5,990)' : '결제 모듈 로딩 중...'}
+          <PaymentButton onClick={onOneTimePayment} disabled>
+            일회성 결제 (₩5,990)
           </PaymentButton>
 
           <PaymentButton
             onClick={onSubscriptionPayment}
-            // disabled={!isPaymentReady || isLoading}
-            disabled
+            disabled={!isPaymentReady || isLoading}
           >
             {isPaymentReady ? '정기 구독 시작' : '결제 모듈 로딩 중...'}
           </PaymentButton>
