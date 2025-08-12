@@ -170,29 +170,6 @@ export function useConfirmPayment(options?: UseConfirmPaymentOptions) {
   });
 }
 
-// 사용 예시:
-/*
-const paymentMutation = useConfirmPayment({
-  onSuccess: (data) => {
-    console.log('결제 성공:', data);
-    // 성공 시 처리 로직
-  },
-  onError: (error) => {
-    console.error('결제 실패:', error.message);
-    // 에러 처리 로직
-  },
-});
-
-// 결제 확인 실행
-const handlePayment = () => {
-  paymentMutation.mutate({
-    paymentKey: 'payment_key_123',
-    orderId: 'order_123',
-    amount: '10000',
-  });
-};
-*/
-
 // useQuery 버전 (결제 정보를 조회할 때 사용)
 type UseConfirmPaymentQueryOptions = Omit<
   UseQueryOptions<ConfirmPaymentResult, PaymentConfirmError>,
@@ -219,15 +196,3 @@ export function useConfirmPaymentQuery(
     ...options,
   });
 }
-
-/*
-// useQuery 사용 예시:
-const { data, error, isLoading, refetch } = useConfirmPaymentQuery({
-  paymentKey: 'payment_key_123',
-  orderId: 'order_123',
-  amount: '10000',
-}, {
-  enabled: true, // 즉시 실행
-  staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
-});
-*/

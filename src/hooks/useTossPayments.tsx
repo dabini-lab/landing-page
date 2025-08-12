@@ -74,11 +74,6 @@ export const useTossPayments = (): TossPaymentsHook => {
   return { isScriptLoaded, payment, isLoading };
 };
 
-// utility functions for payment handling
-export const generateOrderId = (): string => {
-  return `ORDER_${new Date().getTime()}`;
-};
-
 export const getPaymentUrls = () => {
   const baseUrl = window.location.origin;
   return {
@@ -88,16 +83,3 @@ export const getPaymentUrls = () => {
     billingFailUrl: `${baseUrl}/pricing/fail`,
   };
 };
-
-export const PAYMENT_CONFIG = {
-  PREMIUM_PRICE: 5900,
-  CUSTOMER_INFO: {
-    email: 'customer123@gmail.com',
-    name: '김망고',
-    phone: '01012345678',
-  },
-  PRODUCT_INFO: {
-    name: 'Dabini Premium 구독',
-    description: 'Dabini의 모든 기능을 활용하세요.',
-  },
-} as const;

@@ -27,21 +27,6 @@ export default async function handler(
     });
   }
 
-  // 임시로 메소드 체크 우회 (디버깅용)
-  // if (req.method !== 'POST') {
-  //   // eslint-disable-next-line no-console
-  //   console.log('🔴 BILLING.TS - Returning 405 because method is not POST');
-  //   return res.status(405).json({
-  //     error: 'Method Not Allowed',
-  //     received: req.method,
-  //     expected: 'POST',
-  //     source: 'billing.ts',
-  //   });
-  // }
-
-  // eslint-disable-next-line no-console
-  console.log('🟢 BILLING.TS - Method check bypassed, proceeding with logic');
-
   const { authKey, customerKey, uid } = req.body;
 
   if (!authKey || !customerKey || !uid) {
@@ -58,13 +43,6 @@ export default async function handler(
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // eslint-disable-next-line no-console
-    console.log('🔵 BILLING.TS - Calling TossPayments API:', {
-      url: BILLING_API_URL,
-      authKey: authKey ? '***' : 'missing',
-      customerKey: customerKey ? '***' : 'missing',
-    });
-
     const response = await fetch(BILLING_API_URL, {
       method: 'POST',
       headers: {
@@ -78,13 +56,6 @@ export default async function handler(
     });
 
     const billingData = await response.json();
-
-    // eslint-disable-next-line no-console
-    console.log('🔵 BILLING.TS - TossPayments API response:', {
-      status: response.status,
-      ok: response.ok,
-      hasBillingKey: !!billingData.billingKey,
-    });
 
     if (!response.ok) {
       return res.status(response.status).json({

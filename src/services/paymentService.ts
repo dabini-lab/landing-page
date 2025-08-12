@@ -1,8 +1,4 @@
-import {
-  generateOrderId,
-  getPaymentUrls,
-  PAYMENT_CONFIG,
-} from '@/hooks/useTossPayments';
+import { getPaymentUrls } from '@/hooks/useTossPayments';
 import { auth } from '@/lib/firebase/clientApp';
 
 export class PaymentService {
@@ -10,29 +6,6 @@ export class PaymentService {
 
   constructor(payment: any) {
     this.payment = payment;
-  }
-
-  async requestOneTimePayment(): Promise<void> {
-    if (!this.payment) {
-      throw new Error('결제 모듈이 초기화되지 않았습니다.');
-    }
-
-    const urls = getPaymentUrls();
-
-    await this.payment.requestPayment({
-      method: 'CARD',
-      amount: {
-        currency: 'KRW',
-        value: PAYMENT_CONFIG.PREMIUM_PRICE,
-      },
-      orderId: generateOrderId(),
-      orderName: PAYMENT_CONFIG.PRODUCT_INFO.name,
-      successUrl: urls.successUrl,
-      failUrl: urls.failUrl,
-      customerEmail: PAYMENT_CONFIG.CUSTOMER_INFO.email,
-      customerName: PAYMENT_CONFIG.CUSTOMER_INFO.name,
-      customerMobilePhone: PAYMENT_CONFIG.CUSTOMER_INFO.phone,
-    });
   }
 
   async requestSubscriptionPayment(): Promise<void> {
@@ -53,9 +26,8 @@ export class PaymentService {
         method: 'CARD',
         successUrl: `${urls.billingSuccessUrl}?uid=${currentUser.uid}`,
         failUrl: urls.billingFailUrl,
-        customerEmail: currentUser.email || PAYMENT_CONFIG.CUSTOMER_INFO.email,
-        customerName:
-          currentUser.displayName || PAYMENT_CONFIG.CUSTOMER_INFO.name,
+        customerEmail: currentUser.email || 'customer@example.com',
+        customerName: currentUser.displayName || '사용자',
       });
     } catch (error) {
       // eslint-disable-next-line no-console
