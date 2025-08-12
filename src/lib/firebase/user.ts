@@ -76,30 +76,12 @@ export const updateUserSubscription = async (
 
   // 한국 시간으로 구독 종료일 계산
   // 현재 한국 시간 기준으로 다음 달 같은 날 23:59:59로 설정
-  const currentTime = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
-  );
-  // eslint-disable-next-line no-console
-  console.log('🕐 현재 시간 (KST):', currentTime.toISOString());
-
+  const currentTime = new Date();
   const subscriptionEndDate = new Date(currentTime);
   subscriptionEndDate.setMonth(
     subscriptionEndDate.getMonth() + subscriptionMonths,
   );
   subscriptionEndDate.setHours(23, 59, 59, 999); // 23:59:59.999로 설정
-  // eslint-disable-next-line no-console
-  console.log(
-    '📅 구독 종료일 (23:59:59 설정):',
-    subscriptionEndDate.toISOString(),
-  );
-
-  // eslint-disable-next-line no-console
-  console.log('📅 구독 종료일 (UTC):', subscriptionEndDate.toISOString());
-  // eslint-disable-next-line no-console
-  console.log(
-    '📅 구독 종료일 (KST):',
-    subscriptionEndDate.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-  );
 
   await updateDoc(userDocRef, {
     is_premium: true,

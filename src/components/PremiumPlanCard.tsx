@@ -3,14 +3,12 @@ import Link from 'next/link';
 import { PaymentButton } from './PaymentButton';
 
 interface PremiumPlanCardProps {
-  onOneTimePayment: () => void;
   onSubscriptionPayment: () => void;
   isPaymentReady: boolean;
   isLoading: boolean;
 }
 
 export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
-  onOneTimePayment,
   onSubscriptionPayment,
   isPaymentReady,
   isLoading,
@@ -22,7 +20,7 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">Premium</h2>
           <p className="mt-2 text-gray-600">Dabini의 모든 기능을 활용하세요.</p>
           <div className="mt-6">
-            <span className="text-4xl font-bold text-gray-900">₩5,990</span>
+            <span className="text-4xl font-bold text-gray-900">₩5,900</span>
             <span className="text-gray-600">/월</span>
           </div>
         </div>
@@ -73,10 +71,6 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
         </ul>
 
         <div className="mt-8 space-y-4">
-          <PaymentButton onClick={onOneTimePayment} disabled>
-            일회성 결제 (₩5,990)
-          </PaymentButton>
-
           <PaymentButton
             onClick={onSubscriptionPayment}
             disabled={!isPaymentReady || isLoading}

@@ -90,7 +90,7 @@ export const getPaymentUrls = () => {
 };
 
 export const PAYMENT_CONFIG = {
-  PREMIUM_PRICE: 5990,
+  PREMIUM_PRICE: 5900,
   CUSTOMER_INFO: {
     email: 'customer123@gmail.com',
     name: '김망고',

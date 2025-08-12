@@ -2,14 +2,22 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { useAuth } from '../hooks/useAuth';
 import { useBillingResult } from '../hooks/useBillingResult';
 import { usePaymentResult } from '../hooks/usePaymentResult';
+import { usePremiumData } from '../hooks/usePremiumData';
 import { LoadingSpinner } from './LoadingSpinner';
 
 export const PaymentSuccessCard: React.FC = () => {
   const searchParams = useSearchParams();
   const resultData = usePaymentResult();
   const billingData = useBillingResult();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const {
+    premiumData,
+    isLoading: isPremiumLoading,
+    error: premiumError,
+  } = usePremiumData();
   const [showError, setShowError] = useState(false);
 
   // URL 파라미터를 기반으로 빌링 결제 여부 판단
@@ -53,7 +61,11 @@ export const PaymentSuccessCard: React.FC = () => {
     : resultData.isLoading;
   const currentError = isBillingPayment ? billingData.error : resultData.error;
 
-  if (isCurrentlyLoading || (currentError && !showError)) {
+  // Premium 데이터도 로딩 중인지 확인 (빌링 결제의 경우)
+  const shouldShowLoading =
+    isCurrentlyLoading || (isBillingPayment && isPremiumLoading);
+
+  if (shouldShowLoading || (currentError && !showError)) {
     return <LoadingSpinner />;
   }
 
@@ -118,8 +130,32 @@ export const PaymentSuccessCard: React.FC = () => {
                   orderId: searchParams.get('orderId') ? 'present' : 'missing',
                   amount: searchParams.get('amount') ? 'present' : 'missing',
                 },
+                userInfo: {
+                  uid: user?.uid || 'not authenticated',
+                  email: user?.email || 'no email',
+                  isAuthLoading,
+                },
                 resultData,
                 billingData,
+                premiumData: premiumData
+                  ? {
+                      is_premium: premiumData.is_premium,
+                      is_subscribing: premiumData.is_subscribing,
+                      subscription_started_at:
+                        premiumData.subscription_started_at
+                          ? premiumData.subscription_started_at
+                              .toDate()
+                              .toISOString()
+                          : null,
+                      subscription_end_date: premiumData.subscription_end_date
+                        ? premiumData.subscription_end_date
+                            .toDate()
+                            .toISOString()
+                        : null,
+                    }
+                  : null,
+                premiumLoading: isPremiumLoading,
+                premiumError,
                 isBillingPayment,
               },
               null,
@@ -176,25 +212,33 @@ export const PaymentSuccessCard: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">구독 시작일</span>
                 <span className="font-medium text-gray-900">
-                  {new Date().toLocaleDateString('ko-KR')}
+                  {premiumData?.subscription_started_at
+                    ? new Date(
+                        premiumData.subscription_started_at.toDate(),
+                      ).toLocaleDateString('ko-KR')
+                    : new Date().toLocaleDateString('ko-KR')}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">다음 결제일</span>
                 <span className="font-medium text-gray-900">
-                  {(() => {
-                    // 한국 시간으로 다음 달 같은 날 23:59:59로 계산
-                    const koreaTime = new Date();
-                    koreaTime.setHours(koreaTime.getHours() + 9); // UTC to KST
-                    const nextPaymentDate = new Date(koreaTime);
-                    nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
-                    return nextPaymentDate.toLocaleDateString('ko-KR');
-                  })()}
+                  {premiumData?.subscription_end_date
+                    ? new Date(
+                        premiumData.subscription_end_date.toDate(),
+                      ).toLocaleDateString()
+                    : (() => {
+                        // 한국 시간으로 다음 달 같은 날 23:59:59로 계산 (fallback)
+                        const nextPaymentDate = new Date();
+                        nextPaymentDate.setMonth(
+                          nextPaymentDate.getMonth() + 1,
+                        );
+                        return nextPaymentDate.toLocaleDateString();
+                      })()}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">월 요금</span>
-                <span className="font-medium text-gray-900">₩5,990</span>
+                <span className="font-medium text-gray-900">₩5,900</span>
               </div>
             </>
           ) : (

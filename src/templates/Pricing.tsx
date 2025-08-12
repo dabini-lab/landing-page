@@ -20,8 +20,7 @@ declare global {
 
 const Pricing = () => {
   const { isScriptLoaded, payment, isLoading } = useTossPayments();
-  const { handleOneTimePayment, handleSubscriptionPayment } =
-    usePaymentHandlers(payment);
+  const { handleSubscriptionPayment } = usePaymentHandlers(payment);
 
   return (
     <>
@@ -47,7 +46,6 @@ const Pricing = () => {
 
           <div className="mt-16 flex justify-center">
             <PremiumPlanCard
-              onOneTimePayment={handleOneTimePayment}
               onSubscriptionPayment={handleSubscriptionPayment}
               isPaymentReady={isScriptLoaded}
               isLoading={isLoading}
