@@ -39,22 +39,12 @@ export const useBillingConfirm = () => {
       }
 
       try {
-        // eslint-disable-next-line no-console
-        console.log('🚀 Sending request to:', '/api/payments/billing');
-
         const response = await fetch('/api/payments/billing', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
-        });
-
-        // eslint-disable-next-line no-console
-        console.log('📨 Response received:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: response.url,
         });
 
         const result = await response.json();
@@ -86,7 +76,7 @@ export const useBillingConfirm = () => {
 
         // API에서 빌링키를 받은 후 Firebase에 저장
         if (result.success && result.billingKey && result.uid) {
-          await updateUserSubscription(result.uid, result.billingKey, 1);
+          await updateUserSubscription(result.uid, result.billingKey);
         }
 
         setIsLoading(false);

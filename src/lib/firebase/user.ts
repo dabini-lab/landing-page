@@ -69,7 +69,6 @@ export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
 export const updateUserSubscription = async (
   uid: string,
   billingKey: string,
-  subscriptionMonths: number = 1,
 ): Promise<void> => {
   const premiumCollection = collection(userDb, 'premium');
   const userDocRef = doc(premiumCollection, uid);
@@ -78,10 +77,7 @@ export const updateUserSubscription = async (
   // 현재 한국 시간 기준으로 다음 달 같은 날 23:59:59로 설정
   const currentTime = new Date();
   const subscriptionEndDate = new Date(currentTime);
-  subscriptionEndDate.setMonth(
-    subscriptionEndDate.getMonth() + subscriptionMonths,
-  );
-  subscriptionEndDate.setHours(23, 59, 59, 999); // 23:59:59.999로 설정
+  subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 31); // 31일 후
 
   await updateDoc(userDocRef, {
     is_premium: true,

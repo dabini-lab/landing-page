@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { useState } from 'react';
+
+import { useAuth } from '@/hooks/useAuth';
 
 import { PaymentButton } from './PaymentButton';
 
@@ -13,6 +16,17 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
   isPaymentReady,
   isLoading,
 }) => {
+  const { user } = useAuth();
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+
+  const handlePaymentClick = () => {
+    if (!user) {
+      setShowLoginMessage(true);
+      setTimeout(() => setShowLoginMessage(false), 3000); // 3초 후 메시지 숨김
+      return;
+    }
+    onSubscriptionPayment();
+  };
   return (
     <div className="w-full max-w-md">
       <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-lg">
@@ -71,8 +85,29 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
         </ul>
 
         <div className="mt-8 space-y-4">
+          {showLoginMessage && (
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+              <div className="flex items-center">
+                <svg
+                  className="mr-2 size-5 text-yellow-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-sm text-yellow-800">
+                  구독을 시작하려면 먼저 로그인해 주세요.
+                </p>
+              </div>
+            </div>
+          )}
+
           <PaymentButton
-            onClick={onSubscriptionPayment}
+            onClick={handlePaymentClick}
             disabled={!isPaymentReady || isLoading}
           >
             {isPaymentReady ? '정기 구독 시작' : '결제 모듈 로딩 중...'}

@@ -225,14 +225,12 @@ export const PaymentSuccessCard: React.FC = () => {
                   {premiumData?.subscription_end_date
                     ? new Date(
                         premiumData.subscription_end_date.toDate(),
-                      ).toLocaleDateString()
+                      ).toLocaleDateString('ko-KR')
                     : (() => {
-                        // 한국 시간으로 다음 달 같은 날 23:59:59로 계산 (fallback)
-                        const nextPaymentDate = new Date();
-                        nextPaymentDate.setMonth(
-                          nextPaymentDate.getMonth() + 1,
-                        );
-                        return nextPaymentDate.toLocaleDateString();
+                        // fallback: 현재 시각에서 31일 후
+                        const fallbackEndDate = new Date();
+                        fallbackEndDate.setDate(fallbackEndDate.getDate() + 31);
+                        return fallbackEndDate.toLocaleDateString('ko-KR');
                       })()}
                 </span>
               </div>

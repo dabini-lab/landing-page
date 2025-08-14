@@ -5,17 +5,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  // 개발 모드에서 요청 로그
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.log('🔵 BILLING.TS - API called:', {
-      method: req.method,
-      url: req.url,
-      body: req.body,
-      headers: req.headers,
-    });
-  }
-
   // 메소드 체크 전에 추가 로깅
   if (process.env.NODE_ENV === 'development') {
     // eslint-disable-next-line no-console
