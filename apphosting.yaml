@@ -5,3 +5,7 @@ runConfig:
 env:
   - variable: NODE_ENV
     value: production
+  - variable: NEXT_PUBLIC_TOSS_PAYMENTS_CLIENT_KEY
+    value: test_ck_kYG57Eba3GZBpWv6bQZz8pWDOxmA
+  - variable: TOSS_PAYMENTS_SECRET_KEY
+    secret: TOSS_PAYMENTS_SECRET_KEY
