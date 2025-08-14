@@ -6,6 +6,7 @@ import {
   getDoc,
   runTransaction,
   type Timestamp,
+  updateDoc,
 } from 'firebase/firestore';
 
 import { userDb } from '@/lib/firebase/clientApp';
@@ -14,6 +15,9 @@ export interface UserPremiumData {
   is_premium: boolean;
   is_subscribing: boolean;
   subscription_end_date: Timestamp | null;
+  billing_key?: string | null;
+  billing_key_created_at?: Timestamp | null;
+  subscription_started_at?: Timestamp | null;
 }
 
 export const createUserPremiumDocument = async (user: User): Promise<void> => {
@@ -25,6 +29,9 @@ export const createUserPremiumDocument = async (user: User): Promise<void> => {
     is_premium: false,
     is_subscribing: false,
     subscription_end_date: null,
+    billing_key: null,
+    billing_key_created_at: null,
+    subscription_started_at: null,
   };
 
   // Use transaction to check if document exists before creating
@@ -57,4 +64,27 @@ export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
   const userDocRef = doc(premiumCollection, uid);
 
   await deleteDoc(userDocRef);
+};
+
+export const updateUserSubscription = async (
+  uid: string,
+  billingKey: string,
+): Promise<void> => {
+  const premiumCollection = collection(userDb, 'premium');
+  const userDocRef = doc(premiumCollection, uid);
+
+  // 한국 시간으로 구독 종료일 계산
+  // 현재 한국 시간 기준으로 다음 달 같은 날 23:59:59로 설정
+  const currentTime = new Date();
+  const subscriptionEndDate = new Date(currentTime);
+  subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 31); // 31일 후
+
+  await updateDoc(userDocRef, {
+    is_premium: true,
+    is_subscribing: true,
+    billing_key: billingKey,
+    billing_key_created_at: currentTime,
+    subscription_started_at: currentTime,
+    subscription_end_date: subscriptionEndDate,
+  });
 };
