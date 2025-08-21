@@ -24,7 +24,7 @@ export class PaymentService {
     try {
       await this.payment.requestBillingAuth({
         method: 'CARD',
-        successUrl: `${urls.billingSuccessUrl}?uid=${currentUser.uid}`,
+        successUrl: `${urls.billingSuccessUrl}?uid=${currentUser.uid}&customerEmail=${encodeURIComponent(currentUser.email || '')}&customerName=${encodeURIComponent(currentUser.displayName || '')}`,
         failUrl: urls.billingFailUrl,
         customerEmail: currentUser.email || 'customer@example.com',
         customerName: currentUser.displayName || '사용자',

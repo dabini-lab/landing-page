@@ -8,10 +8,16 @@ interface BillingConfirmData {
   authKey: string;
   customerKey: string;
   uid: string;
+  customerEmail?: string;
+  customerName?: string;
 }
 
 interface BillingResultData {
   billingKey?: string;
+  paymentKey?: string;
+  orderId?: string;
+  amount?: number;
+  status?: string;
   isLoading: boolean;
   error?: string;
   success?: boolean;
@@ -24,22 +30,22 @@ export const useBillingConfirm = () => {
   const confirmBilling = useCallback(
     async (
       data: BillingConfirmData,
-    ): Promise<{ billingKey?: string; success: boolean }> => {
+    ): Promise<{ billingKey?: string; payment?: any; success: boolean }> => {
       setIsLoading(true);
       setError(null);
 
       // 개발 모드에서 요청 디버그 정보
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
-        console.log('Billing API request:', {
-          url: '/api/payments/billing',
+        console.log('Billing confirm API request:', {
+          url: '/api/payments/billing-confirm',
           method: 'POST',
           data,
         });
       }
 
       try {
-        const response = await fetch('/api/payments/billing', {
+        const response = await fetch('/api/payments/billing-confirm', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -52,7 +58,7 @@ export const useBillingConfirm = () => {
         // 개발 모드에서 응답 디버그 정보
         if (process.env.NODE_ENV === 'development') {
           // eslint-disable-next-line no-console
-          console.log('Billing API response:', {
+          console.log('Billing confirm API response:', {
             status: response.status,
             statusText: response.statusText,
             ok: response.ok,
@@ -64,24 +70,30 @@ export const useBillingConfirm = () => {
           // 405 에러인 경우 더 자세한 정보 제공
           if (response.status === 405) {
             throw new Error(
-              `API 엔드포인트가 POST 메소드를 지원하지 않습니다. (Status: ${response.status}, URL: /api/payments/billing)`,
+              `API 엔드포인트가 POST 메소드를 지원하지 않습니다. (Status: ${response.status}, URL: /api/payments/billing-confirm)`,
             );
           }
 
           throw new Error(
             result.error ||
-              `빌링키 확인 중 오류가 발생했습니다. (${response.status})`,
+              `구독 결제 중 오류가 발생했습니다. (${response.status})`,
           );
         }
 
-        // API에서 빌링키를 받은 후 Firebase에 저장
+        // API에서 빌링키와 결제 정보를 받은 후 Firebase에 저장
         if (result.success && result.billingKey && result.uid) {
-          await updateUserSubscription(result.uid, result.billingKey);
+          // 결제 성공 시 Premium 구독으로 업데이트
+          await updateUserSubscription(result.uid, result.billingKey, {
+            status: 'active',
+            plan: 'premium',
+            paymentInfo: result.payment,
+          });
         }
 
         setIsLoading(false);
         return {
           billingKey: result.billingKey,
+          payment: result.payment,
           success: true,
         };
       } catch (err) {
@@ -127,6 +139,10 @@ export const useBillingResult = () => {
       // Firebase Auth에서 현재 사용자 UID 가져오기
       const { currentUser } = auth;
 
+      // URL 파라미터에서 사용자 정보 추출
+      const customerEmail = searchParams.get('customerEmail');
+      const customerName = searchParams.get('customerName');
+
       // 개발 모드에서 디버그 정보 출력
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
@@ -136,6 +152,8 @@ export const useBillingResult = () => {
             : null,
           authKey,
           customerKey,
+          customerEmail,
+          customerName,
         });
       }
 
@@ -153,10 +171,16 @@ export const useBillingResult = () => {
           authKey,
           customerKey,
           uid: currentUser.uid,
+          customerEmail: customerEmail || currentUser.email || undefined,
+          customerName: customerName || currentUser.displayName || undefined,
         });
 
         setResultData({
           billingKey: result.billingKey,
+          paymentKey: result.payment?.paymentKey,
+          orderId: result.payment?.orderId,
+          amount: result.payment?.amount,
+          status: result.payment?.status,
           isLoading: false,
           success: true,
           error: undefined,
@@ -171,7 +195,7 @@ export const useBillingResult = () => {
         });
       }
     },
-    [confirmBilling],
+    [confirmBilling, searchParams],
   );
 
   useEffect(() => {

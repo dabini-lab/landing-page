@@ -1,5 +1,6 @@
 import type { User } from 'firebase/auth';
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -12,12 +13,27 @@ import {
 import { userDb } from '@/lib/firebase/clientApp';
 
 export interface UserPremiumData {
-  is_premium: boolean;
-  is_subscribing: boolean;
-  subscription_end_date: Timestamp | null;
-  billing_key?: string | null;
-  billing_key_created_at?: Timestamp | null;
-  subscription_started_at?: Timestamp | null;
+  isPremium: boolean;
+  subscriptionEndDate: Timestamp | null;
+  billingKey?: string | null;
+  billingKeyCreatedAt?: Timestamp | null;
+  subscriptionStartedAt?: Timestamp | null;
+  subscriptionStatus?: 'active' | 'inactive' | 'cancelled' | 'expired';
+  subscriptionPlan?: string;
+}
+
+export interface PaymentData {
+  uid: string;
+  paymentKey: string;
+  orderId: string;
+  amount: number;
+  status: string;
+  approvedAt: Timestamp;
+  card?: any;
+  orderName: string;
+  customerKey: string;
+  billingKey: string;
+  createdAt: Timestamp;
 }
 
 export const createUserPremiumDocument = async (user: User): Promise<void> => {
@@ -26,12 +42,12 @@ export const createUserPremiumDocument = async (user: User): Promise<void> => {
   // Use user.uid as document ID to enforce uniqueness naturally
   const userDocRef = doc(premiumCollection, user.uid);
   const userData: UserPremiumData = {
-    is_premium: false,
-    is_subscribing: false,
-    subscription_end_date: null,
-    billing_key: null,
-    billing_key_created_at: null,
-    subscription_started_at: null,
+    isPremium: false,
+    subscriptionEndDate: null,
+    billingKey: null,
+    billingKeyCreatedAt: null,
+    subscriptionStartedAt: null,
+    subscriptionStatus: 'inactive',
   };
 
   // Use transaction to check if document exists before creating
@@ -66,9 +82,36 @@ export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
   await deleteDoc(userDocRef);
 };
 
+export interface SubscriptionInfo {
+  status: string;
+  plan: string;
+  paymentInfo?: any;
+}
+
+// 결제 정보를 payments collection에 저장
+export const savePaymentData = async (
+  paymentData: Omit<PaymentData, 'createdAt'>,
+): Promise<string> => {
+  const paymentsCollection = collection(userDb, 'payments');
+
+  const paymentDoc = {
+    ...paymentData,
+    // approvedAt을 Date 객체로 변환 (이미 ISO string인 경우)
+    approvedAt:
+      typeof paymentData.approvedAt === 'string'
+        ? new Date(paymentData.approvedAt)
+        : paymentData.approvedAt,
+    createdAt: new Date(),
+  };
+
+  const docRef = await addDoc(paymentsCollection, paymentDoc);
+  return docRef.id;
+};
+
 export const updateUserSubscription = async (
   uid: string,
   billingKey: string,
+  subscriptionInfo?: SubscriptionInfo,
 ): Promise<void> => {
   const premiumCollection = collection(userDb, 'premium');
   const userDocRef = doc(premiumCollection, uid);
@@ -77,14 +120,46 @@ export const updateUserSubscription = async (
   // 현재 한국 시간 기준으로 다음 달 같은 날 23:59:59로 설정
   const currentTime = new Date();
   const subscriptionEndDate = new Date(currentTime);
-  subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 31); // 31일 후
+  subscriptionEndDate.setUTCMonth(subscriptionEndDate.getUTCMonth() + 1);
 
-  await updateDoc(userDocRef, {
-    is_premium: true,
-    is_subscribing: true,
-    billing_key: billingKey,
-    billing_key_created_at: currentTime,
-    subscription_started_at: currentTime,
-    subscription_end_date: subscriptionEndDate,
-  });
+  const updateData: any = {
+    isPremium: true,
+    billingKey,
+    billingKeyCreatedAt: currentTime,
+    subscriptionStartedAt: currentTime,
+    subscriptionEndDate,
+    subscriptionStatus: 'active', // Default to active when subscription is updated
+  };
+
+  // 추가 구독 정보가 있으면 포함 (last_payment_info는 제외)
+  if (subscriptionInfo) {
+    const status = subscriptionInfo.status as
+      | 'active'
+      | 'inactive'
+      | 'cancelled'
+      | 'expired';
+    updateData.subscriptionStatus = status;
+    updateData.subscriptionPlan = subscriptionInfo.plan;
+
+    // isPremium은 subscription status에 따라 결정
+    updateData.isPremium = status === 'active';
+
+    // 결제 정보는 별도의 payments collection에 저장
+    if (subscriptionInfo.paymentInfo) {
+      await savePaymentData({
+        uid,
+        paymentKey: subscriptionInfo.paymentInfo.paymentKey,
+        orderId: subscriptionInfo.paymentInfo.orderId,
+        amount: subscriptionInfo.paymentInfo.amount,
+        status: subscriptionInfo.paymentInfo.status,
+        approvedAt: subscriptionInfo.paymentInfo.approvedAt,
+        card: subscriptionInfo.paymentInfo.card,
+        orderName: 'Dabini Premium 구독',
+        customerKey: uid,
+        billingKey,
+      });
+    }
+  }
+
+  await updateDoc(userDocRef, updateData);
 };

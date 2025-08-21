@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { PaymentButton } from './PaymentButton';
 
 interface PremiumPlanCardProps {
-  onSubscriptionPayment: () => void;
+  onSubscriptionPayment: () => Promise<void>;
   isPaymentReady: boolean;
   isLoading: boolean;
 }
@@ -19,13 +19,20 @@ export const PremiumPlanCard: React.FC<PremiumPlanCardProps> = ({
   const { user } = useAuth();
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
-  const handlePaymentClick = () => {
+  const handlePaymentClick = async () => {
     if (!user) {
       setShowLoginMessage(true);
       setTimeout(() => setShowLoginMessage(false), 3000); // 3초 후 메시지 숨김
       return;
     }
-    onSubscriptionPayment();
+
+    try {
+      await onSubscriptionPayment();
+    } catch (error) {
+      // 에러 처리는 상위 컴포넌트에서 처리
+      // eslint-disable-next-line no-console
+      console.error('구독 결제 중 오류:', error);
+    }
   };
   return (
     <div className="w-full max-w-md">
