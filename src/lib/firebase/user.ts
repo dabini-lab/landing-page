@@ -12,18 +12,25 @@ import {
 
 import { userDb } from '@/lib/firebase/clientApp';
 
+export enum SubscriptionStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  CANCELLED = 'cancelled',
+  EXPIRED = 'expired',
+}
+
 export interface UserPremiumData {
   isPremium: boolean;
   subscriptionEndDate: Timestamp | null;
   billingKey?: string | null;
   billingKeyCreatedAt?: Timestamp | null;
   subscriptionStartedAt?: Timestamp | null;
-  subscriptionStatus?: 'active' | 'inactive' | 'cancelled' | 'expired';
+  subscriptionStatus?: SubscriptionStatus;
   subscriptionPlan?: string;
 }
 
 export interface PaymentData {
-  uid: string;
+  userId: string;
   paymentKey: string;
   orderId: string;
   amount: number;
@@ -47,7 +54,7 @@ export const createUserPremiumDocument = async (user: User): Promise<void> => {
     billingKey: null,
     billingKeyCreatedAt: null,
     subscriptionStartedAt: null,
-    subscriptionStatus: 'inactive',
+    subscriptionStatus: SubscriptionStatus.INACTIVE,
   };
 
   // Use transaction to check if document exists before creating
@@ -83,7 +90,7 @@ export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
 };
 
 export interface SubscriptionInfo {
-  status: string;
+  status: SubscriptionStatus;
   plan: string;
   paymentInfo?: any;
 }
@@ -128,26 +135,22 @@ export const updateUserSubscription = async (
     billingKeyCreatedAt: currentTime,
     subscriptionStartedAt: currentTime,
     subscriptionEndDate,
-    subscriptionStatus: 'active', // Default to active when subscription is updated
+    subscriptionStatus: SubscriptionStatus.ACTIVE, // Default to active when subscription is updated
   };
 
   // 추가 구독 정보가 있으면 포함 (last_payment_info는 제외)
   if (subscriptionInfo) {
-    const status = subscriptionInfo.status as
-      | 'active'
-      | 'inactive'
-      | 'cancelled'
-      | 'expired';
+    const { status } = subscriptionInfo;
     updateData.subscriptionStatus = status;
     updateData.subscriptionPlan = subscriptionInfo.plan;
 
     // isPremium은 subscription status에 따라 결정
-    updateData.isPremium = status === 'active';
+    updateData.isPremium = status === SubscriptionStatus.ACTIVE;
 
     // 결제 정보는 별도의 payments collection에 저장
     if (subscriptionInfo.paymentInfo) {
       await savePaymentData({
-        uid,
+        userId: uid,
         paymentKey: subscriptionInfo.paymentInfo.paymentKey,
         orderId: subscriptionInfo.paymentInfo.orderId,
         amount: subscriptionInfo.paymentInfo.amount,

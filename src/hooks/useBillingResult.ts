@@ -2,7 +2,10 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { auth } from '@/lib/firebase/clientApp';
-import { updateUserSubscription } from '@/lib/firebase/user';
+import {
+  SubscriptionStatus,
+  updateUserSubscription,
+} from '@/lib/firebase/user';
 
 interface BillingConfirmData {
   authKey: string;
@@ -84,7 +87,7 @@ export const useBillingConfirm = () => {
         if (result.success && result.billingKey && result.uid) {
           // 결제 성공 시 Premium 구독으로 업데이트
           await updateUserSubscription(result.uid, result.billingKey, {
-            status: 'active',
+            status: SubscriptionStatus.ACTIVE,
             plan: 'premium',
             paymentInfo: result.payment,
           });

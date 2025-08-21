@@ -12,7 +12,11 @@ import {
   onAuthStateChanged,
   signOut,
 } from '@/lib/firebase/auth';
-import { getUserPremiumData, type UserPremiumData } from '@/lib/firebase/user';
+import {
+  getUserPremiumData,
+  SubscriptionStatus,
+  type UserPremiumData,
+} from '@/lib/firebase/user';
 
 // Helper function to format timestamp to readable date
 type TimestampLike = { toDate: () => Date };
@@ -141,18 +145,19 @@ export default function UserPage() {
                   <span className="text-gray-600">구독 상태:</span>
                   <span
                     className={`font-medium ${
-                      premiumData.subscriptionStatus === 'active'
+                      premiumData.subscriptionStatus ===
+                      SubscriptionStatus.ACTIVE
                         ? 'text-green-600'
                         : 'text-gray-500'
                     }`}
                   >
                     {(() => {
                       switch (premiumData.subscriptionStatus) {
-                        case 'active':
+                        case SubscriptionStatus.ACTIVE:
                           return '✓ 활성';
-                        case 'cancelled':
+                        case SubscriptionStatus.CANCELLED:
                           return '✗ 취소됨';
-                        case 'expired':
+                        case SubscriptionStatus.EXPIRED:
                           return '✗ 만료됨';
                         default:
                           return '✗ 비활성';
