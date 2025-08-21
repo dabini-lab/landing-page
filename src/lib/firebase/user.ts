@@ -6,17 +6,47 @@ import {
   doc,
   getDoc,
   runTransaction,
-  type Timestamp,
+  Timestamp,
   updateDoc,
 } from 'firebase/firestore';
 
 import { userDb } from '@/lib/firebase/clientApp';
+
+// Utility function to convert various date formats to Firestore Timestamp
+const toTimestamp = (date: string | Date | Timestamp): Timestamp => {
+  if (date instanceof Timestamp) {
+    return date;
+  }
+  if (typeof date === 'string') {
+    return Timestamp.fromDate(new Date(date));
+  }
+  if (date instanceof Date) {
+    return Timestamp.fromDate(date);
+  }
+  throw new Error('Invalid date format');
+};
 
 export enum SubscriptionStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   CANCELLED = 'cancelled',
   EXPIRED = 'expired',
+}
+
+// Card information interface
+export interface CardInfo {
+  issuerCode?: string;
+  acquirerCode?: string;
+  number?: string;
+  installmentPlanMonths?: number;
+  isInterestFree?: boolean;
+  interestPayer?: string | null;
+  approveNo?: string;
+  useCardPoint?: boolean;
+  cardType?: string;
+  ownerType?: string;
+  acquireStatus?: string;
+  amount?: number;
 }
 
 export interface UserPremiumData {
@@ -36,11 +66,25 @@ export interface PaymentData {
   amount: number;
   status: string;
   approvedAt: Timestamp;
-  card?: any;
+  card?: CardInfo;
   orderName: string;
   customerKey: string;
   billingKey: string;
   createdAt: Timestamp;
+}
+
+// Input type for savePaymentData function that accepts flexible date formats
+export interface PaymentDataInput {
+  userId: string;
+  paymentKey: string;
+  orderId: string;
+  amount: number;
+  status: string;
+  approvedAt: string | Date | Timestamp;
+  card?: CardInfo;
+  orderName: string;
+  customerKey: string;
+  billingKey: string;
 }
 
 export const createUserPremiumDocument = async (user: User): Promise<void> => {
@@ -89,26 +133,32 @@ export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
   await deleteDoc(userDocRef);
 };
 
+// Payment info interface for subscription
+export interface SubscriptionPaymentInfo {
+  paymentKey: string;
+  orderId: string;
+  amount: number;
+  status: string;
+  approvedAt: string | Date | Timestamp;
+  card?: CardInfo;
+}
+
 export interface SubscriptionInfo {
   status: SubscriptionStatus;
   plan: string;
-  paymentInfo?: any;
+  paymentInfo?: SubscriptionPaymentInfo;
 }
 
 // 결제 정보를 payments collection에 저장
 export const savePaymentData = async (
-  paymentData: Omit<PaymentData, 'createdAt'>,
+  paymentData: PaymentDataInput,
 ): Promise<string> => {
   const paymentsCollection = collection(userDb, 'payments');
 
-  const paymentDoc = {
+  const paymentDoc: PaymentData = {
     ...paymentData,
-    // approvedAt을 Date 객체로 변환 (이미 ISO string인 경우)
-    approvedAt:
-      typeof paymentData.approvedAt === 'string'
-        ? new Date(paymentData.approvedAt)
-        : paymentData.approvedAt,
-    createdAt: new Date(),
+    approvedAt: toTimestamp(paymentData.approvedAt),
+    createdAt: Timestamp.fromDate(new Date()),
   };
 
   const docRef = await addDoc(paymentsCollection, paymentDoc);
@@ -129,12 +179,12 @@ export const updateUserSubscription = async (
   const subscriptionEndDate = new Date(currentTime);
   subscriptionEndDate.setUTCMonth(subscriptionEndDate.getUTCMonth() + 1);
 
-  const updateData: any = {
+  const updateData: Partial<UserPremiumData> = {
     isPremium: true,
     billingKey,
-    billingKeyCreatedAt: currentTime,
-    subscriptionStartedAt: currentTime,
-    subscriptionEndDate,
+    billingKeyCreatedAt: Timestamp.fromDate(currentTime),
+    subscriptionStartedAt: Timestamp.fromDate(currentTime),
+    subscriptionEndDate: Timestamp.fromDate(subscriptionEndDate),
     subscriptionStatus: SubscriptionStatus.ACTIVE, // Default to active when subscription is updated
   };
 
