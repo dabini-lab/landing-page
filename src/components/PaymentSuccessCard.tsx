@@ -139,18 +139,15 @@ export const PaymentSuccessCard: React.FC = () => {
                 billingData,
                 premiumData: premiumData
                   ? {
-                      is_premium: premiumData.is_premium,
-                      is_subscribing: premiumData.is_subscribing,
-                      subscription_started_at:
-                        premiumData.subscription_started_at
-                          ? premiumData.subscription_started_at
-                              .toDate()
-                              .toISOString()
-                          : null,
-                      subscription_end_date: premiumData.subscription_end_date
-                        ? premiumData.subscription_end_date
+                      isPremium: premiumData.isPremium,
+                      subscriptionStatus: premiumData.subscriptionStatus,
+                      subscriptionStartedAt: premiumData.subscriptionStartedAt
+                        ? premiumData.subscriptionStartedAt
                             .toDate()
                             .toISOString()
+                        : null,
+                      subscriptionEndDate: premiumData.subscriptionEndDate
+                        ? premiumData.subscriptionEndDate.toDate().toISOString()
                         : null,
                     }
                   : null,
@@ -212,9 +209,9 @@ export const PaymentSuccessCard: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">구독 시작일</span>
                 <span className="font-medium text-gray-900">
-                  {premiumData?.subscription_started_at
+                  {premiumData?.subscriptionStartedAt
                     ? new Date(
-                        premiumData.subscription_started_at.toDate(),
+                        premiumData.subscriptionStartedAt.toDate(),
                       ).toLocaleDateString('ko-KR')
                     : new Date().toLocaleDateString('ko-KR')}
                 </span>
@@ -222,14 +219,16 @@ export const PaymentSuccessCard: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">다음 결제일</span>
                 <span className="font-medium text-gray-900">
-                  {premiumData?.subscription_end_date
+                  {premiumData?.subscriptionEndDate
                     ? new Date(
-                        premiumData.subscription_end_date.toDate(),
+                        premiumData.subscriptionEndDate.toDate(),
                       ).toLocaleDateString('ko-KR')
                     : (() => {
                         // fallback: 현재 시각에서 31일 후
                         const fallbackEndDate = new Date();
-                        fallbackEndDate.setDate(fallbackEndDate.getDate() + 31);
+                        fallbackEndDate.setUTCMonth(
+                          fallbackEndDate.getUTCMonth() + 1,
+                        );
                         return fallbackEndDate.toLocaleDateString('ko-KR');
                       })()}
                 </span>

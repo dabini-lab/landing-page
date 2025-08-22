@@ -12,12 +12,16 @@ import {
   onAuthStateChanged,
   signOut,
 } from '@/lib/firebase/auth';
-import { getUserPremiumData, type UserPremiumData } from '@/lib/firebase/user';
+import {
+  getUserPremiumData,
+  SubscriptionStatus,
+  type UserPremiumData,
+} from '@/lib/firebase/user';
 
 // Helper function to format timestamp to readable date
 type TimestampLike = { toDate: () => Date };
 const formatDate = (
-  timestamp: TimestampLike | Date | string | null | undefined
+  timestamp: TimestampLike | Date | string | null | undefined,
 ): string => {
   if (!timestamp) return '없음';
 
@@ -132,24 +136,40 @@ export default function UserPage() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">프리미엄 사용자:</span>
                   <span
-                    className={`font-medium ${premiumData.is_premium ? 'text-green-600' : 'text-gray-500'}`}
+                    className={`font-medium ${premiumData.isPremium ? 'text-green-600' : 'text-gray-500'}`}
                   >
-                    {premiumData.is_premium ? '✓ 예' : '✗ 아니오'}
+                    {premiumData.isPremium ? '✓ 예' : '✗ 아니오'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">구독 상태:</span>
                   <span
-                    className={`font-medium ${premiumData.is_subscribing ? 'text-green-600' : 'text-gray-500'}`}
+                    className={`font-medium ${
+                      premiumData.subscriptionStatus ===
+                      SubscriptionStatus.ACTIVE
+                        ? 'text-green-600'
+                        : 'text-gray-500'
+                    }`}
                   >
-                    {premiumData.is_subscribing ? '✓ 활성' : '✗ 비활성'}
+                    {(() => {
+                      switch (premiumData.subscriptionStatus) {
+                        case SubscriptionStatus.ACTIVE:
+                          return '✓ 활성';
+                        case SubscriptionStatus.CANCELLED:
+                          return '✗ 취소됨';
+                        case SubscriptionStatus.EXPIRED:
+                          return '✗ 만료됨';
+                        default:
+                          return '✗ 비활성';
+                      }
+                    })()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">구독 만료일:</span>
                   <span className="font-medium text-gray-900">
-                    {premiumData.subscription_end_date
-                      ? formatDate(premiumData.subscription_end_date)
+                    {premiumData.subscriptionEndDate
+                      ? formatDate(premiumData.subscriptionEndDate)
                       : '없음'}
                   </span>
                 </div>

@@ -5,7 +5,7 @@ import { PaymentService } from '../services/paymentService';
 export const usePaymentHandlers = (payment: any) => {
   const paymentService = new PaymentService(payment);
 
-  const handleSubscriptionPayment = useCallback(async () => {
+  const handleSubscriptionPayment = useCallback(async (): Promise<void> => {
     try {
       // eslint-disable-next-line no-console
       console.log('구독 결제 시작...');
