@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 
 import { auth } from '@/lib/firebase/clientApp';
-import { createUserPremiumDocument } from '@/lib/firebase/user';
+import PremiumSubscriptionService from '@/services/premiumSubscriptionService';
 
 export function onAuthStateChanged(
   cb: (user: User | null) => void,
@@ -28,7 +28,15 @@ export async function signInWithGoogle(): Promise<void> {
 
   // Create user premium document if it's a new user
   if (result.user) {
-    await createUserPremiumDocument(result.user);
+    try {
+      await PremiumSubscriptionService.createPremiumDocument(result.user.uid);
+    } catch (error) {
+      // Log error but don't prevent sign in
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Error creating premium document:', error);
+      }
+    }
   }
 }
 
