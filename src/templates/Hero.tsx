@@ -10,7 +10,7 @@ import {
   signInWithGoogle,
   signOut,
 } from '@/lib/firebase/auth';
-import { createUserPremiumDocument } from '@/lib/firebase/user';
+import PremiumSubscriptionService from '@/services/premiumSubscriptionService';
 
 import { Background } from '../background/Background';
 import { Button, ButtonColor } from '../button/Button';
@@ -28,9 +28,13 @@ const useUserSession = (initialUser: object | any) => {
 
         // Ensure user premium document exists (for cases where user signs in through other means)
         try {
-          await createUserPremiumDocument(user);
+          await PremiumSubscriptionService.createPremiumDocument(user.uid);
         } catch (error) {
-          // console.error('Error creating user premium document:', error);
+          // Log error but don't prevent sign in
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.error('Error creating premium document:', error);
+          }
         }
       } else {
         await deleteCookie('__session');

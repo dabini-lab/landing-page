@@ -1,10 +1,36 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow all reads and writes for development
-    // In production, you should implement proper security rules
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    // Helper functions for validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    
+    // Premium subscription documents - users can only read their own data
+    // All write operations must go through backend API with admin privileges
+    match /premium/{userId} {
+      // Read: Users can only read their own premium data
+      allow read: if isOwner(userId);
+
+      // Write operations disabled - must use backend API
+      // Backend uses Firebase Admin SDK with elevated privileges
+      allow write: if false;
+    }
+    
+    // Payment records - users can only read their own payment data
+    // All write operations must go through backend API with admin privileges
+    match /payments/{paymentId} {
+      // Read: Users can only read payments where they are the userId
+      allow read: if isAuthenticated() 
+        && resource.data.userId == request.auth.uid;
+
+      // Write operations disabled - must use backend API
+      // Backend uses Firebase Admin SDK with elevated privileges
+      allow write: if false;
     }
   }
 }

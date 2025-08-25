@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { adminFirestoreService } from '@/services/adminFirestoreService';
+
 // 빌링키 발급 확인 후 즉시 구독 결제 처리
 export default async function handler(
   req: NextApiRequest,
@@ -100,6 +102,47 @@ export default async function handler(
 
       // 결제가 성공적으로 완료된 경우
       if (paymentData.status === 'DONE') {
+        try {
+          // Save payment record using admin service
+          await adminFirestoreService.createPayment(paymentData.paymentKey, {
+            userId: uid,
+            paymentKey: paymentData.paymentKey,
+            orderId: paymentData.orderId,
+            amount: paymentData.totalAmount,
+            status: paymentData.status,
+            approvedAt: paymentData.approvedAt,
+            card: paymentData.card,
+            billingKey: billingData.billingKey,
+            customerKey: billingData.customerKey,
+            type: 'subscription',
+            createdAt: new Date().toISOString(),
+          });
+
+          // Create or update premium subscription
+          await adminFirestoreService.createPremiumSubscription(uid, {
+            userId: uid,
+            isActive: true,
+            billingKey: billingData.billingKey,
+            customerKey: billingData.customerKey,
+            currentPeriodStart: new Date().toISOString(),
+            currentPeriodEnd: new Date(
+              Date.now() + 30 * 24 * 60 * 60 * 1000,
+            ).toISOString(), // 30 days
+            plan: 'premium',
+            status: 'active',
+            lastPaymentId: paymentData.paymentKey,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+        } catch (dbError) {
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.error('Database save error:', dbError);
+          }
+          // Payment succeeded but database save failed
+          // Still return success but log the error for manual handling
+        }
+
         return res.status(200).json({
           success: true,
           billingKey: billingData.billingKey,

@@ -1,30 +1,8 @@
 import type { User } from 'firebase/auth';
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  runTransaction,
-  Timestamp,
-  updateDoc,
-} from 'firebase/firestore';
+import { collection, doc, getDoc, type Timestamp } from 'firebase/firestore';
 
 import { userDb } from '@/lib/firebase/clientApp';
-
-// Utility function to convert various date formats to Firestore Timestamp
-const toTimestamp = (date: string | Date | Timestamp): Timestamp => {
-  if (date instanceof Timestamp) {
-    return date;
-  }
-  if (typeof date === 'string') {
-    return Timestamp.fromDate(new Date(date));
-  }
-  if (date instanceof Date) {
-    return Timestamp.fromDate(date);
-  }
-  throw new Error('Invalid date format');
-};
+import PremiumSubscriptionService from '@/services/premiumSubscriptionService';
 
 export enum SubscriptionStatus {
   ACTIVE = 'active',
@@ -87,28 +65,17 @@ export interface PaymentDataInput {
   billingKey: string;
 }
 
+/**
+ * Create user premium document - migrated to use API
+ */
 export const createUserPremiumDocument = async (user: User): Promise<void> => {
-  const premiumCollection = collection(userDb, 'premium');
-
-  // Use user.uid as document ID to enforce uniqueness naturally
-  const userDocRef = doc(premiumCollection, user.uid);
-  const userData: UserPremiumData = {
-    isPremium: false,
-    subscriptionEndDate: null,
-    billingKey: null,
-    billingKeyCreatedAt: null,
-    subscriptionStartedAt: null,
-    subscriptionStatus: SubscriptionStatus.INACTIVE,
-  };
-
-  // Use transaction to check if document exists before creating
-  await runTransaction(userDb, async (transaction) => {
-    const docSnap = await transaction.get(userDocRef);
-
-    if (!docSnap.exists()) {
-      transaction.set(userDocRef, userData);
-    }
-  });
+  try {
+    await PremiumSubscriptionService.createPremiumDocument(user.uid);
+  } catch (error) {
+    throw new Error(
+      `Failed to create premium document: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 
 export const getUserPremiumData = async (
@@ -126,11 +93,17 @@ export const getUserPremiumData = async (
   return null;
 };
 
+/**
+ * Delete user premium document - migrated to use API
+ */
 export const deleteUserPremiumDocument = async (uid: string): Promise<void> => {
-  const premiumCollection = collection(userDb, 'premium');
-  const userDocRef = doc(premiumCollection, uid);
-
-  await deleteDoc(userDocRef);
+  try {
+    await PremiumSubscriptionService.deletePremiumDocument(uid);
+  } catch (error) {
+    throw new Error(
+      `Failed to delete premium document: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 
 // Payment info interface for subscription
@@ -149,70 +122,47 @@ export interface SubscriptionInfo {
   paymentInfo?: SubscriptionPaymentInfo;
 }
 
-// 결제 정보를 payments collection에 저장
+/**
+ * Save payment data - migrated to use API
+ */
 export const savePaymentData = async (
   paymentData: PaymentDataInput,
 ): Promise<string> => {
-  const paymentsCollection = collection(userDb, 'payments');
+  try {
+    // Generate a unique payment ID
+    const paymentId = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  const paymentDoc: PaymentData = {
-    ...paymentData,
-    approvedAt: toTimestamp(paymentData.approvedAt),
-    createdAt: Timestamp.fromDate(new Date()),
-  };
+    await PremiumSubscriptionService.createPaymentRecord(
+      paymentId,
+      paymentData.userId,
+      paymentData,
+    );
 
-  const docRef = await addDoc(paymentsCollection, paymentDoc);
-  return docRef.id;
+    return paymentId;
+  } catch (error) {
+    throw new Error(
+      `Failed to save payment data: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 
+/**
+ * Update user subscription - migrated to use API
+ */
 export const updateUserSubscription = async (
   uid: string,
   billingKey: string,
   subscriptionInfo?: SubscriptionInfo,
 ): Promise<void> => {
-  const premiumCollection = collection(userDb, 'premium');
-  const userDocRef = doc(premiumCollection, uid);
-
-  // 한국 시간으로 구독 종료일 계산
-  // 현재 한국 시간 기준으로 다음 달 같은 날 23:59:59로 설정
-  const currentTime = new Date();
-  const subscriptionEndDate = new Date(currentTime);
-  subscriptionEndDate.setUTCMonth(subscriptionEndDate.getUTCMonth() + 1);
-
-  const updateData: Partial<UserPremiumData> = {
-    isPremium: true,
-    billingKey,
-    billingKeyCreatedAt: Timestamp.fromDate(currentTime),
-    subscriptionStartedAt: Timestamp.fromDate(currentTime),
-    subscriptionEndDate: Timestamp.fromDate(subscriptionEndDate),
-    subscriptionStatus: SubscriptionStatus.ACTIVE, // Default to active when subscription is updated
-  };
-
-  // 추가 구독 정보가 있으면 포함 (last_payment_info는 제외)
-  if (subscriptionInfo) {
-    const { status } = subscriptionInfo;
-    updateData.subscriptionStatus = status;
-    updateData.subscriptionPlan = subscriptionInfo.plan;
-
-    // isPremium은 subscription status에 따라 결정
-    updateData.isPremium = status === SubscriptionStatus.ACTIVE;
-
-    // 결제 정보는 별도의 payments collection에 저장
-    if (subscriptionInfo.paymentInfo) {
-      await savePaymentData({
-        userId: uid,
-        paymentKey: subscriptionInfo.paymentInfo.paymentKey,
-        orderId: subscriptionInfo.paymentInfo.orderId,
-        amount: subscriptionInfo.paymentInfo.amount,
-        status: subscriptionInfo.paymentInfo.status,
-        approvedAt: subscriptionInfo.paymentInfo.approvedAt,
-        card: subscriptionInfo.paymentInfo.card,
-        orderName: 'Dabini Premium 구독',
-        customerKey: uid,
-        billingKey,
-      });
-    }
+  try {
+    await PremiumSubscriptionService.updateUserSubscription(
+      uid,
+      billingKey,
+      subscriptionInfo,
+    );
+  } catch (error) {
+    throw new Error(
+      `Failed to update subscription: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
-
-  await updateDoc(userDocRef, updateData);
 };
